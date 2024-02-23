@@ -17,10 +17,14 @@ class AuthService
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
         ]);
-    
+
         $token = JWTAuth::fromUser($user);
-    
-        return ['user' => $user, 'token' => $token];
+
+        return response()->json([
+            'user' => $user,
+            'access_token' => $token,
+            'token_type' => 'Bearer'
+        ]);
     }
 
     public function login(array $credentials)
@@ -28,8 +32,16 @@ class AuthService
         if (!$token = Auth::attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
+
+        $user = Auth::user();
     
-        return ['user' => Auth::user(), 'token' => $token];
+        $token = JWTAuth::fromUser($user);
+    
+        return response()->json([
+            'user' => $user,
+            'access_token' => $token, 
+            'token_type' => 'Bearer'
+        ]);
     }
 }
 ?>

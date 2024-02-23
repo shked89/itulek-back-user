@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use \App\Services\AuthService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -20,25 +21,17 @@ class AuthController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
         ]);
-
-        $result = $this->authService->register($validatedData);
-
-        return response()->json(['user' => $result['user'], 'access_token' => $result['token'], 'token_type' => 'Bearer']);
+    
+        return $this->authService->register($validatedData);
     }
-
+    
     public function login(Request $request)
     {
         $credentials = $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
-
-        $result = $this->authService->login($credentials);
-
-        if (!$result) {
-            return response()->json(['message' => 'Unauthorized'], 401);
-        }
-
-        return response()->json(['user' => $result['user'], 'access_token' => $result['token'], 'token_type' => 'Bearer']);
+    
+        return $this->authService->login($credentials);
     }
 }
